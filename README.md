@@ -24,7 +24,7 @@ Key features:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/rest.ts.git
+git clone https://github.com/sunilksamanta/rest.ts.git
 
 # Navigate to the project directory
 cd rest.ts
