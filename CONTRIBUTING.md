@@ -1,6 +1,6 @@
-# Contributing to nodejs-ts-auto-rest
+# Contributing to rest.ts
 
-Thank you for your interest in contributing to nodejs-ts-auto-rest! This document provides guidelines and instructions to help you get started.
+Thank you for your interest in contributing to rest.ts! This document provides guidelines and instructions to help you get started.
 
 ## Code of Conduct
 
@@ -27,7 +27,7 @@ If you find a bug, please create an issue with the following information:
 
 ### Suggesting Enhancements
 
-We welcome suggestions for improving nodejs-ts-auto-rest. To suggest an enhancement:
+We welcome suggestions for improving rest.ts. To suggest an enhancement:
 
 1. Create an issue with a clear title and detailed description
 2. Explain why this enhancement would be useful
@@ -110,4 +110,4 @@ The project maintainers will handle the release process, including:
 
 If you have any questions about contributing, please create an issue with your question.
 
-Thank you for contributing to nodejs-ts-auto-rest!
+Thank you for contributing to rest.ts!

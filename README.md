@@ -1,7 +1,6 @@
-# nodejs-ts-auto-rest
+# rest.ts
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm version](https://img.shields.io/npm/v/nodejs-ts-auto-rest.svg)](https://www.npmjs.com/package/nodejs-ts-auto-rest)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.x-green.svg)](https://www.mongodb.com/)
@@ -11,7 +10,7 @@ A TypeScript-based Node.js framework for automatically generating RESTful APIs w
 
 ## Overview
 
-nodejs-ts-auto-rest is a productive framework designed to streamline the development of RESTful APIs in Node.js using TypeScript. It leverages MongoDB through Mongoose, and provides a seamless way to generate and manage API modules with complete CRUD operations.
+rest.ts is a productive framework designed to streamline the development of RESTful APIs in Node.js using TypeScript. It leverages MongoDB through Mongoose, and provides a seamless way to generate and manage API modules with complete CRUD operations.
 
 Key features:
 - 🚀 Automatic REST API generation
@@ -25,10 +24,10 @@ Key features:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/nodejs-ts-auto-rest.git
+git clone https://github.com/yourusername/rest.ts.git
 
 # Navigate to the project directory
-cd nodejs-ts-auto-rest
+cd rest.ts
 
 # Install dependencies
 npm install
