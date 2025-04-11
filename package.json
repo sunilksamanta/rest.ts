@@ -1,7 +1,7 @@
 {
   "name": "rest.ts",
   "version": "1.0.0",
-  "description": "",
+  "description": "A TypeScript-based Node.js framework for automatically generating RESTful APIs with MongoDB integration",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
@@ -10,9 +10,27 @@
     "lint": "eslint 'src/**/*.ts'",
     "generate": "node scripts/generate.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "typescript",
+    "nodejs",
+    "rest",
+    "api",
+    "mongodb",
+    "mongoose",
+    "express",
+    "auto-generate",
+    "framework"
+  ],
+  "author": "Sunil K Samanta <sunilksamanta@gmail.com> (https://github.com/sunilksamanta)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunilksamanta/rest.ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sunilksamanta/rest.ts/issues"
+  },
+  "homepage": "https://github.com/sunilksamanta/rest.ts#readme",
   "devDependencies": {
     "@eslint/js": "^9.8.0",
     "@types/express": "^4.17.21",

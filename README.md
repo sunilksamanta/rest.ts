@@ -1,4 +1,11 @@
-# Rest.ts
+# nodejs-ts-auto-rest
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/nodejs-ts-auto-rest.svg)](https://www.npmjs.com/package/nodejs-ts-auto-rest)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-6.x-green.svg)](https://www.mongodb.com/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 A TypeScript-based Node.js framework for automatically generating RESTful APIs with MongoDB integration.
 
