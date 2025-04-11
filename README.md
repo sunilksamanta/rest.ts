@@ -48,7 +48,7 @@ Make sure MongoDB is running on your local machine or update the connection URI 
 
 ### 2. Generate Modules
 
-This framework includes a powerful generator to create modules and models. To use the generator:
+This framework includes a powerful generator to create modules, models, and custom routes. To use the generator:
 
 ```bash
 npm run generate
@@ -57,12 +57,14 @@ npm run generate
 This will start an interactive CLI that guides you through creating:
 - Model (database schema)
 - Module (controller with routes)
-- Or both at once
+- Both Module and Model at once
+- Custom Route for an existing module
 
 The generator prompts you for:
-- Resource name
-- Fields and their types
+- Resource name (for modules and models)
+- Fields and their types (for models)
 - Custom routes and handlers
+- Route paths, HTTP methods, and handler names
 - And more
 
 ### 3. Start the Server
@@ -99,7 +101,31 @@ Plus any custom routes you define during generation.
 
 ## Custom Routes
 
-You can add custom routes to your modules during generation or by manually editing the module file:
+You have three ways to add custom routes to your modules:
+
+### 1. Using the Generator Script
+
+The easiest way is to use the generator script's dedicated "Custom Route" option:
+
+```bash
+npm run generate
+# Then select "Custom Route" from the menu
+```
+
+This interactive process will:
+1. Let you select an existing module
+2. Define the route path (e.g., `/search`, `/export`)
+3. Choose the HTTP method (GET, POST, PUT, PATCH, DELETE)
+4. Name the handler method
+5. Automatically add the route to the selected module
+
+### 2. During Module Generation
+
+When creating a new module, the generator will ask if you want to add custom routes and guide you through setting them up.
+
+### 3. Manual Addition
+
+You can also manually edit the module file to add custom routes:
 
 ```typescript
 constructor() {
