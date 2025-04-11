@@ -10,17 +10,21 @@ app.get('/', (req: Request, res: Response) => {
 
 // Dynamic Routing based on the Module's name from modules folder
 import { readdirSync } from 'fs';
-import { join } from 'path';
+import { join, extname, basename } from 'path';
 import { CustomRouteT } from './factory/types/factory';
 import pluralize from 'pluralize';
 
 const modulesPath: string = join(__dirname, 'modules');
-const modules: string[] = readdirSync(modulesPath);
+const moduleFiles: string[] = readdirSync(modulesPath);
 
-modules.forEach((moduleName: string) => {
-    const routeName = pluralize(moduleName.toLowerCase().replace('.ts', ''));
-    console.log(`Module: ${moduleName}  Route: ${routeName}`);
-    const modulePath: string = join(modulesPath, moduleName);
+moduleFiles.forEach((moduleFile: string) => {
+    // Remove file extension (.ts or .js) to get module name
+    const moduleName = basename(moduleFile, extname(moduleFile));
+    const routeName = pluralize(moduleName.toLowerCase());
+    
+    console.log(`Module file: ${moduleFile}, Module: ${moduleName}, Route: ${routeName}`);
+    const modulePath: string = join(modulesPath, moduleFile);
+    
     import(modulePath).then(module => {
         const controller = new module.default();
 
@@ -57,7 +61,7 @@ modules.forEach((moduleName: string) => {
     }).catch(error => {
         console.error(`Error importing module: ${error}`);
     });
-} );
+});
 
 
 app.listen(port, () => {
