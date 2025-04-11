@@ -42,9 +42,22 @@ src/
 
 ## Getting Started
 
-### 1. Configure MongoDB
+### 1. Configure Environment Variables
 
-Make sure MongoDB is running on your local machine or update the connection URI in `src/db/connection.ts`.
+1. Copy the example environment file to create your own:
+
+```bash
+cp .env.example .env
+```
+
+2. Modify the `.env` file with your specific configuration:
+   - Set your MongoDB connection URI
+   - Configure server port
+   - Adjust other settings as needed
+
+### 2. Configure MongoDB
+
+Make sure MongoDB is running on your local machine or update the connection URI in your `.env` file.
 
 ### 2. Generate Modules
 
