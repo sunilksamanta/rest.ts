@@ -1,6 +1,6 @@
 import { Document, Schema } from 'mongoose';
 import { BaseModel, SchemaDefinition } from '../factory/BaseModel';
-import { Field, Model } from './decorators';
+import { Field, Model } from '../factory/decorators/model';
 
 /**
  * Order item interface
@@ -29,7 +29,7 @@ export interface OrderDocument extends Document {
 @Model('Order')
 export class OrderModel extends BaseModel<OrderDocument> {
   @Field({ type: String, required: true })
-  customer!: string;
+  customer: string;
 
   @Field({
     type: [{
@@ -39,19 +39,19 @@ export class OrderModel extends BaseModel<OrderDocument> {
     }],
     required: true
   })
-  items!: OrderItem[];
+  items: OrderItem[];
 
   @Field({ type: Number, required: true })
-  totalAmount!: number;
+  totalAmount: number;
 
   @Field({ type: String, required: true, default: 'pending', enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'] })
-  status!: string;
+  status: string;
 
   @Field({ type: Date, default: Date.now })
-  orderDate!: Date;
+  orderDate: Date;
 
   @Field({ type: String, required: true })
-  shippingAddress!: string;
+  shippingAddress: string;
 
   constructor() {
     super('Order');

@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 import { BaseModel, SchemaDefinition } from '../factory/BaseModel';
-import { Field, Model } from './decorators';
+import { Field, Model } from '../factory/decorators/model';
 
 /**
  * Book document interface
@@ -20,22 +20,22 @@ export interface BookDocument extends Document {
 @Model('Book')
 export class BookModel extends BaseModel<BookDocument> {
   @Field({ type: String, required: true })
-  title!: string;
+  title: string;
 
   @Field({ type: String, required: true })
-  author!: string;
+  author: string;
 
   @Field({ type: String, required: true, unique: true })
-  isbn!: string;
+  isbn: string;
 
   @Field({ type: Number, required: true })
-  publishedYear!: number;
+  publishedYear: number;
 
   @Field({ type: Number, required: true })
-  price!: number;
+  price: number;
 
   @Field({ type: String })
-  description!: string;
+  description: string;
 
   constructor() {
     super('Book');

@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 import { BaseModel, SchemaDefinition } from '../factory/BaseModel';
-import { Field, Model } from './decorators';
+import { Field, Model } from '../factory/decorators/model';
 
 /**
  * Employee document interface
@@ -21,25 +21,25 @@ export interface EmployeeDocument extends Document {
 @Model('Employee')
 export class EmployeeModel extends BaseModel<EmployeeDocument> {
   @Field({ type: String, required: true })
-  firstName!: string;
+  firstName: string;
 
   @Field({ type: String, required: true })
   lastName!: string;
 
   @Field({ type: String, required: true, unique: true })
-  email!: string;
+  email: string;
 
   @Field({ type: String, required: true })
-  position!: string;
+  position: string;
 
   @Field({ type: String, required: true })
-  department!: string;
+  department: string;
 
   @Field({ type: Number, required: true })
-  salary!: number;
+  salary: number;
 
   @Field({ type: Date, default: Date.now })
-  hireDate!: Date;
+  hireDate: Date;
 
   constructor() {
     super('Employee');
