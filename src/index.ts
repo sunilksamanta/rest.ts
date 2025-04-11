@@ -1,5 +1,7 @@
+import dotenv from 'dotenv';
+// Load environment variables from .env file
+dotenv.config();
 import express, { Request, Response, Express } from 'express';
-
 const app: Express = express();
 const port: number = process.env.PORT ? Number(process.env.PORT) : 3000;
 import { DBConnection } from './db/connection';

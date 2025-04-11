@@ -18,16 +18,19 @@ export class DBConnection {
 
   /**
    * Connect to MongoDB
-   * @param uri MongoDB connection URI (defaults to localhost if not provided)
+   * @param uri MongoDB connection URI (defaults to the URI from .env file if not provided)
    */
-  async connect(uri: string = 'mongodb://localhost:27017/auto-rest-app'): Promise<void> {
+  async connect(uri?: string): Promise<void> {
     try {
       if (this._isConnected) {
         console.log('MongoDB already connected');
         return;
       }
       
-      await mongoose.connect(uri);
+      // Use provided URI or fall back to environment variable or default value
+      const connectionUri = uri || process.env.MONGODB_URI || 'mongodb://localhost:27017/auto-rest-app';
+      
+      await mongoose.connect(connectionUri);
       this._isConnected = true;
       console.log('Connected to MongoDB successfully');
     } catch (error) {
