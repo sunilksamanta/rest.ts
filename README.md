@@ -1,4 +1,4 @@
-# nodejs-ts-auto-rest
+# Rest.ts
 
 A TypeScript-based Node.js framework for automatically generating RESTful APIs with MongoDB integration.
 
