@@ -13,6 +13,7 @@ class Book extends BaseModule {
             method: 'GET',
             handler: this.getBookNames
         })
+
     }
 
     @Controller()

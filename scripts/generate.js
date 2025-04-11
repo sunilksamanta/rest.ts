@@ -32,33 +32,38 @@ async function main() {
         type: 'list',
         name: 'generatorType',
         message: 'What do you want to generate?',
-        choices: ['Module', 'Model', 'Both Module and Model']
+        choices: ['Module', 'Model', 'Both Module and Model', 'Custom Route']
       }
     ]);
 
-    // Ask for the resource name
-    const { resourceName } = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'resourceName',
-        message: 'Enter the resource name (e.g. User, Product, Order):',
-        validate: (input) => {
-          if (!input) return 'Resource name cannot be empty';
-          if (!/^[A-Z][a-zA-Z]*$/.test(input)) {
-            return 'Resource name must start with a capital letter and contain only letters';
+    // If Custom Route was selected, skip asking for resource name
+    if (generatorType === 'Custom Route') {
+      await generateCustomRoute();
+    } else {
+      // Ask for the resource name for other options
+      const { resourceName } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'resourceName',
+          message: 'Enter the resource name (e.g. User, Product, Order):',
+          validate: (input) => {
+            if (!input) return 'Resource name cannot be empty';
+            if (!/^[A-Z][a-zA-Z]*$/.test(input)) {
+              return 'Resource name must start with a capital letter and contain only letters';
+            }
+            return true;
           }
-          return true;
         }
-      }
-    ]);
+      ]);
 
-    // Depending on their choice, generate module, model, or both
-    if (generatorType === 'Module' || generatorType === 'Both Module and Model') {
-      await generateModule(resourceName, generatorType === 'Both Module and Model');
-    } 
-    
-    if (generatorType === 'Model' || generatorType === 'Both Module and Model') {
-      await generateModel(resourceName);
+      // Generate module, model or both based on selection
+      if (generatorType === 'Module' || generatorType === 'Both Module and Model') {
+        await generateModule(resourceName, generatorType === 'Both Module and Model');
+      }
+      
+      if (generatorType === 'Model' || generatorType === 'Both Module and Model') {
+        await generateModel(resourceName);
+      }
     }
 
     // Update package.json to include the generate script
@@ -464,6 +469,175 @@ export default new ${resourceName}Model();
 
   await writeFile(filePath, modelContent);
   console.log(`✅ Model '${resourceName}Model.ts' has been created successfully!`);
+}
+
+/**
+ * Generate a custom route for an existing module
+ */
+async function generateCustomRoute() {
+  try {
+    // Get list of existing module files
+    const moduleFiles = fs.readdirSync(MODULES_DIR).filter(file => file.endsWith('.ts'));
+    
+    if (moduleFiles.length === 0) {
+      console.log('❌ No modules found. Please create a module first.');
+      return;
+    }
+    
+    // Extract module names for the choices
+    const moduleChoices = moduleFiles.map(file => {
+      const moduleName = path.basename(file, '.ts');
+      return { name: moduleName, value: moduleName };
+    });
+    
+    // Ask which module to add the route to
+    const { selectedModule } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'selectedModule',
+        message: 'Select a module to add a custom route to:',
+        choices: moduleChoices
+      }
+    ]);
+    
+    // Define the route details
+    const { path: routePath, method, handlerName } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'path',
+        message: 'Enter route path (e.g. /all, /search):',
+        default: '/custom',
+        validate: (input) => input.startsWith('/') ? true : 'Path must start with /'
+      },
+      {
+        type: 'list',
+        name: 'method',
+        message: 'Select HTTP method:',
+        choices: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+      },
+      {
+        type: 'input',
+        name: 'handlerName',
+        message: 'Enter handler method name:',
+        default: (answers) => {
+          // Generate a default name based on method and path
+          // Extract only the first part of the path (before any parameter)
+          let pathPart = answers.path.substring(1).split('/')[0];
+          
+          // Remove path parameters (anything after :)
+          pathPart = pathPart.split(':')[0];
+          
+          // Convert dashes to camelCase
+          if (pathPart.includes('-')) {
+            pathPart = pathPart.split('-').map((part, index) => 
+              index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)
+            ).join('');
+          }
+          
+          const methodPrefix = answers.method.toLowerCase();
+          return `${methodPrefix}${pathPart.charAt(0).toUpperCase() + pathPart.slice(1)}`;
+        },
+        validate: (input) => input ? true : 'Handler name cannot be empty'
+      }
+    ]);
+    
+    // Read the current module file content
+    const modulePath = path.join(MODULES_DIR, `${selectedModule}.ts`);
+    let moduleContent = await readFile(modulePath, 'utf8');
+    
+    // Check if the module already has this route handler
+    const methodRegex = new RegExp(`\\s+async\\s+${handlerName}\\s*\\(`);
+    if (methodRegex.test(moduleContent)) {
+      console.log(`❌ Handler '${handlerName}' already exists in module ${selectedModule}. Please choose a different handler name.`);
+      return;
+    }
+    
+    // Check if the route path is already registered
+    const routePathRegex = new RegExp(`path:\\s*['"]${routePath}['"]`);
+    if (routePathRegex.test(moduleContent)) {
+      console.log(`⚠️ Warning: A route with path '${routePath}' might already exist in module ${selectedModule}.`);
+      
+      const { proceed } = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'proceed',
+        message: 'Do you want to continue anyway?',
+        default: false
+      }]);
+      
+      if (!proceed) {
+        return;
+      }
+    }
+    
+    // Parse the file to check if it imports a model
+    const hasModel = moduleContent.includes(`import ${selectedModule}Model from "../models/${selectedModule}Model"`);
+    
+    // Create route handler content with just a blank array
+    const handlerBody = `
+        // TODO: Implement your custom logic here
+        return [];`;
+    
+    const handlerCode = `
+    @Controller()
+    async ${handlerName}(): Promise<object> {${handlerBody}
+    }`;
+    
+    // Create route registration code
+    const routeRegistration = `
+        this.registerRoute({
+            path: '${routePath}',
+            method: '${method}',
+            handler: this.${handlerName}
+        });`;
+    
+    // Insert route registration into constructor
+    const constructorEndIndex = moduleContent.indexOf('constructor() {');
+    if (constructorEndIndex !== -1) {
+      // Find the end of the constructor
+      let openBraces = 0;
+      let closeBraces = 0;
+      let constructorEnd = constructorEndIndex;
+      
+      for (let i = constructorEndIndex; i < moduleContent.length; i++) {
+        if (moduleContent[i] === '{') openBraces++;
+        if (moduleContent[i] === '}') {
+          closeBraces++;
+          if (openBraces === closeBraces) {
+            constructorEnd = i;
+            break;
+          }
+        }
+      }
+      
+      // Insert the route registration before the constructor closes
+      const beforeConstEnd = moduleContent.substring(0, constructorEnd);
+      const afterConstEnd = moduleContent.substring(constructorEnd);
+      moduleContent = beforeConstEnd + routeRegistration + afterConstEnd;
+    } else {
+      console.log(`❌ Could not find constructor in module ${selectedModule}`);
+      return;
+    }
+    
+    // Add the handler method before the final closing brace
+    const lastClosingBrace = moduleContent.lastIndexOf('}');
+    if (lastClosingBrace !== -1) {
+      moduleContent = 
+        moduleContent.substring(0, lastClosingBrace) + 
+        handlerCode + 
+        '\n' + 
+        moduleContent.substring(lastClosingBrace);
+    } else {
+      console.log(`❌ Invalid module structure in ${selectedModule}`);
+      return;
+    }
+    
+    // Write the updated content back to the file
+    await writeFile(modulePath, moduleContent);
+    console.log(`✅ Custom route '${routePath}' with handler '${handlerName}' added to module '${selectedModule}'!`);
+    
+  } catch (error) {
+    console.error('❌ Error generating custom route:', error);
+  }
 }
 
 /**
