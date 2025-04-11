@@ -27,6 +27,8 @@
   "dependencies": {
     "@types/pluralize": "^0.0.33",
     "express": "^4.19.2",
-    "pluralize": "^8.0.0"
+    "mongoose": "^8.13.2",
+    "pluralize": "^8.0.0",
+    "reflect-metadata": "^0.2.2"
   }
 }

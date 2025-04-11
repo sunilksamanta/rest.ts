@@ -1,8 +1,12 @@
 import BaseModule from "../factory/BaseModule";
 import {Controller} from "../factory/decorators";
+import BookModel from "../models/BookModel";
+
 class Book extends BaseModule {
     constructor() {
         super();
+        // Set model for this module
+        this.setModel(BookModel);
 
         this.registerRoute({
             path: '/names-only',
@@ -13,7 +17,9 @@ class Book extends BaseModule {
 
     @Controller()
     async getBookNames(): Promise<string[]> {
-        return ['Book 1', 'Book 2', 'Book 3'];
+        // Use model to get real data
+        const books = await BookModel.find();
+        return books.map(book => book.title);
     }
 }
 

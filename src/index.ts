@@ -2,7 +2,8 @@ import express, { Request, Response, Express } from 'express';
 
 const app: Express = express();
 const port: number = process.env.PORT ? Number(process.env.PORT) : 3000;
-
+import { DBConnection } from './db/connection';
+DBConnection.getInstance().connect();
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello, TypeScript with Express!');
 });
