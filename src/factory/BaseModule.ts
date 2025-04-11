@@ -1,6 +1,6 @@
 import {ControllerArgsT, CustomRouteT} from './types/factory';
 import {Controller} from "./decorators";
-import { BaseModel } from '../models/BaseModel';
+import { BaseModel } from './BaseModel';
 
 class BaseModule {
     moduleName: string = '';

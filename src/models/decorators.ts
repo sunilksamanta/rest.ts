@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { SchemaFieldDefinition } from './BaseModel';
+import { SchemaFieldDefinition } from '../factory/BaseModel';
 
 /**
  * Field decorator to define a property in a model

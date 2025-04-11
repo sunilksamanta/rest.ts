@@ -1,5 +1,5 @@
 import { Document, Schema } from 'mongoose';
-import { BaseModel, SchemaDefinition } from './BaseModel';
+import { BaseModel, SchemaDefinition } from '../factory/BaseModel';
 import { Field, Model } from './decorators';
 
 /**
