@@ -19,7 +19,7 @@ class BookWithHooks extends BaseModule {
             handler: this.getBookNames
         });
 
-        // Direct registration of a hook (alternative to decorators)
+        // Register a global hook with default priority (100)
         this.registerBeforeRequestHook(this.logAllRequests);
     }
 
@@ -33,36 +33,35 @@ class BookWithHooks extends BaseModule {
     /**
      * BeforeRequest hook - runs before the controller method
      * Can modify request, perform validation, or prevent execution
+     * Can be global or target specific method
+     * @param args The controller arguments (request, response, next)
+     * @returns true to continue, false to abort, or modified args
+     * @example
+     * @BeforeRequest({target: 'getBookNames'})
      */
-    @BeforeRequest()
+    @BeforeRequest({target: 'getBookNames'})
     async validateRequest(args: ControllerArgsT): Promise<boolean | void> {
         console.log('Validating request...');
-        
-        // Example validation - add a default parameter if needed
-        if (args.req.path.includes('/names-only') && !args.req.query.format) {
-            console.log('Setting default format parameter');
-            args.req.query.format = 'list';
-        }
         
         // Return true to continue or false to abort
         return true;
     }
 
-    /**
-     * BeforeResponse hook - runs after the controller method but before sending response
-     * Can modify the response data
-     */
-    @BeforeResponse()
-    async formatResponse(args: ControllerArgsT, result: any): Promise<any> {
-        console.log('Formatting response...');
+    // /**
+    //  * BeforeResponse hook - runs after the controller method but before sending response
+    //  * Can modify the response data
+    //  */
+    // @BeforeResponse({target: 'getBookNames'})
+    // async formatResponse(args: ControllerArgsT, result: any): Promise<any> {
+    //     console.log('Formatting response...');
         
-        return { 
-            items: result, 
-            count: result.length,
-            formatted: true,
-            timestamp: new Date().toISOString()
-        };
-    }
+    //     return {
+    //         items: result, 
+    //         count: result.length,
+    //         formatted: true,
+    //         timestamp: new Date().toISOString()
+    //     };
+    // }
 
     /**
      * AfterResponse hook - runs after the response has been sent

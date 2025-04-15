@@ -38,7 +38,8 @@ function Controller(): (target: unknown, propertyKey: string, descriptor: Proper
                 const self = this as any; // Cast to any to access hook methods
                 // Execute beforeRequest hooks if they exist
                 if (typeof self.getBeforeRequestHooks === 'function') {
-                    const beforeHooks: HookFunction[] = self.getBeforeRequestHooks();
+                    // Pass the method name to get method-specific hooks too
+                    const beforeHooks: HookFunction[] = self.getBeforeRequestHooks(propertyKey);
                     for (const hook of beforeHooks) {
                         // Allow hooks to modify the request or prevent execution
                         const hookResult = await hook(controllerArgs);
@@ -55,7 +56,8 @@ function Controller(): (target: unknown, propertyKey: string, descriptor: Proper
                 // Execute beforeResponse hooks that can modify the result
                 let modifiedResult = result;
                 if (typeof self.getBeforeResponseHooks === 'function') {
-                    const beforeResponseHooks: HookFunction[] = self.getBeforeResponseHooks();
+                    // Pass the method name to get method-specific hooks too
+                    const beforeResponseHooks: HookFunction[] = self.getBeforeResponseHooks(propertyKey);
                     for (const hook of beforeResponseHooks) {
                         // Allow hooks to modify the response
                         const hookResult = await hook(controllerArgs, modifiedResult);
@@ -66,11 +68,12 @@ function Controller(): (target: unknown, propertyKey: string, descriptor: Proper
                 }
                 
                 // Send the response
-                res.json({data: modifiedResult, status: 'success'});
+                res.json(modifiedResult);
                 
                 // Execute afterResponse hooks
                 if (typeof self.getAfterResponseHooks === 'function') {
-                    const afterHooks: HookFunction[] = self.getAfterResponseHooks();
+                    // Pass the method name to get method-specific hooks too
+                    const afterHooks: HookFunction[] = self.getAfterResponseHooks(propertyKey);
                     for (const hook of afterHooks) {
                         // These hooks can't modify the response as it's already sent
                         await hook(controllerArgs, modifiedResult);

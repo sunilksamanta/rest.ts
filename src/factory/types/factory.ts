@@ -14,3 +14,17 @@ export interface CustomRouteT { path: string, method: RestMethod, handler: ({ re
  * @returns Modified result or void, or false to stop processing
  */
 export type HookFunction = (args: ControllerArgsT, result?: any) => Promise<any>;
+
+/**
+ * Types of hooks supported by the system
+ */
+export type HookType = 'beforeRequest' | 'beforeResponse' | 'afterResponse';
+
+/**
+ * Extended hook definition with priority and target
+ */
+export interface HookDefinition {
+    hook: HookFunction;
+    priority: number;  // Lower number = higher priority (runs first)
+    target?: string;   // Target method name (undefined = global)
+}

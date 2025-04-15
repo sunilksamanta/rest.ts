@@ -7,9 +7,13 @@ import { HookFunction } from "../types/factory";
  * Decorator to mark a method as a before request hook.
  * This hook runs before the controller method executes.
  * 
+ * @param options Optional configuration for the hook
  * @returns Method decorator function
  */
-export function BeforeRequest() {
+export function BeforeRequest(options: { 
+    priority?: number;
+    target?: string;   // Target controller method or undefined for global
+} = {}) {
     return function(
         target: any,
         propertyKey: string,
@@ -25,8 +29,8 @@ export function BeforeRequest() {
             // Call the original setup first
             originalSetup.apply(this);
             
-            // Register this method as a hook
-            this.registerBeforeRequestHook(originalMethod.bind(this));
+            // Register this method as a hook with options
+            this.registerBeforeRequestHook(originalMethod.bind(this), options);
         };
         
         return descriptor;
@@ -38,9 +42,13 @@ export function BeforeRequest() {
  * This hook runs after the controller method executes but before the response is sent.
  * It can modify the response data.
  * 
+ * @param options Optional configuration for the hook
  * @returns Method decorator function
  */
-export function BeforeResponse() {
+export function BeforeResponse(options: {
+    priority?: number;
+    target?: string;   // Target controller method or undefined for global
+} = {}) {
     return function(
         target: any,
         propertyKey: string,
@@ -52,7 +60,7 @@ export function BeforeResponse() {
         
         target.constructor.prototype.setup = function() {
             originalSetup.apply(this);
-            this.registerBeforeResponseHook(originalMethod.bind(this));
+            this.registerBeforeResponseHook(originalMethod.bind(this), options);
         };
         
         return descriptor;
@@ -64,9 +72,13 @@ export function BeforeResponse() {
  * This hook runs after the response has been sent to the client.
  * It cannot modify the response, but can perform cleanup or logging tasks.
  * 
+ * @param options Optional configuration for the hook
  * @returns Method decorator function
  */
-export function AfterResponse() {
+export function AfterResponse(options: {
+    priority?: number;
+    target?: string;   // Target controller method or undefined for global
+} = {}) {
     return function(
         target: any,
         propertyKey: string,
@@ -78,7 +90,7 @@ export function AfterResponse() {
         
         target.constructor.prototype.setup = function() {
             originalSetup.apply(this);
-            this.registerAfterResponseHook(originalMethod.bind(this));
+            this.registerAfterResponseHook(originalMethod.bind(this), options);
         };
         
         return descriptor;
