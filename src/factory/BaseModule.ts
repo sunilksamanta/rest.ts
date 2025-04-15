@@ -1,10 +1,15 @@
-import {ControllerArgsT, CustomRouteT} from './types/factory';
+import {ControllerArgsT, CustomRouteT, HookFunction} from './types/factory';
 import {Controller} from "./decorators";
 import { BaseModel } from './BaseModel';
 
 class BaseModule {
     moduleName: string = '';
     protected model?: BaseModel<any>;
+    
+    // Hook registries
+    private beforeRequestHooks: HookFunction[] = [];
+    private beforeResponseHooks: HookFunction[] = [];
+    private afterResponseHooks: HookFunction[] = [];
     
     constructor() {
         this.moduleName = this.constructor.name;
@@ -14,6 +19,9 @@ class BaseModule {
         this.read = this.read.bind(this);
         this.update = this.update.bind(this);
         this.delete = this.delete.bind(this);
+        
+        // Call setup method to register hooks
+        this.setup();
     }
     customRoutes: CustomRouteT[] = [];
 
@@ -23,6 +31,45 @@ class BaseModule {
      */
     protected setModel(model: BaseModel<any>): void {
         this.model = model;
+    }
+
+    /**
+     * Setup method to register hooks - can be overridden by child classes
+     * or used through hook decorators
+     */
+    protected setup(): void {
+        // Default implementation is empty
+        // Child classes may override this to register hooks
+    }
+
+    /**
+     * Hook registration methods
+     */
+    protected registerBeforeRequestHook(hook: HookFunction): void {
+        this.beforeRequestHooks.push(hook);
+    }
+    
+    protected registerBeforeResponseHook(hook: HookFunction): void {
+        this.beforeResponseHooks.push(hook);
+    }
+    
+    protected registerAfterResponseHook(hook: HookFunction): void {
+        this.afterResponseHooks.push(hook);
+    }
+    
+    /**
+     * Hook getter methods for the decorator to use
+     */
+    getBeforeRequestHooks(): HookFunction[] {
+        return this.beforeRequestHooks;
+    }
+    
+    getBeforeResponseHooks(): HookFunction[] {
+        return this.beforeResponseHooks;
+    }
+    
+    getAfterResponseHooks(): HookFunction[] {
+        return this.afterResponseHooks;
     }
 
     // Create operation
@@ -96,7 +143,9 @@ class BaseModule {
 
     // Custom operation
     protected registerRoute({ path, method, handler }: CustomRouteT): void {
-        this.customRoutes.push({ path, method, handler });
+        // Auto-bind the handler to this class instance
+        const boundHandler = handler.bind(this);
+        this.customRoutes.push({ path, method, handler: boundHandler });
     }
 }
 
