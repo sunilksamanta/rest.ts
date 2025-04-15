@@ -9,6 +9,7 @@
   - [Models](#models)
   - [Decorators](#decorators)
   - [Routes](#routes)
+  - [Hooks](#hooks)
 - [Getting Started](#getting-started)
   - [Creating a New Project](#creating-a-new-project)
   - [Setting Up MongoDB](#setting-up-mongodb)
@@ -44,6 +45,7 @@ Key features:
 - 📝 TypeScript support
 - 📦 Mongoose integration
 - 🛠️ Customizable routes and controllers
+- 🪝 Powerful request/response lifecycle hooks
 - 🔧 CLI tool for code generation
 
 ## Installation
@@ -228,6 +230,92 @@ this.registerRoute({
     handler: this.customHandler
 });
 ```
+
+### Hooks
+
+Hooks provide a powerful way to intercept and modify the request/response lifecycle in your API endpoints. They enable you to execute code at specific points during request processing without modifying the controller logic itself.
+
+There are three types of hooks in rest.ts:
+
+1. **BeforeRequest Hooks**: Execute before the controller method runs
+   - Can validate request data, authenticate users, or modify the request
+   - Can abort the request by returning `false`
+   - Run in priority order (lower number = higher priority)
+
+2. **BeforeResponse Hooks**: Execute after the controller method but before sending the response
+   - Can transform or enrich the response data
+   - Return a modified value to change the response
+
+3. **AfterResponse Hooks**: Execute after the response has been sent to the client
+   - Used for logging, analytics, cleanup operations, etc.
+   - Cannot modify the response (as it's already sent)
+
+Hooks can be registered in two ways:
+
+#### Registering Hooks with Decorators
+
+```typescript
+// Hook that runs before a specific controller method
+@BeforeRequest({target: 'getBookNames', priority: 10})
+async validateRequest(args: ControllerArgsT): Promise<boolean | void> {
+    console.log('Validating request...');
+    
+    // Return false to abort or true/void to continue
+    if (!args.req.query.valid) {
+        args.res.status(400).json({error: 'Invalid request'});
+        return false;
+    }
+    return true;
+}
+
+// Hook that modifies the response
+@BeforeResponse({target: 'getBookNames'})
+async formatResponse(args: ControllerArgsT, result: any): Promise<any> {
+    return {
+        items: result,
+        count: result.length,
+        timestamp: new Date().toISOString()
+    };
+}
+
+// Hook that runs after response is sent
+@AfterResponse()
+async logResponse(args: ControllerArgsT, result: any): Promise<void> {
+    console.log(`Response sent for ${args.req.method} ${args.req.path}`);
+}
+```
+
+#### Registering Hooks Programmatically
+
+```typescript
+constructor() {
+    super();
+    // Register a global hook with default priority (100)
+    this.registerBeforeRequestHook(this.logAllRequests);
+    
+    // Register a hook for a specific method with custom priority
+    this.registerBeforeResponseHook(this.formatBookNames, { 
+        target: 'getBookNames', 
+        priority: 10 
+    });
+}
+
+async logAllRequests(args: ControllerArgsT): Promise<void> {
+    console.log(`Request to ${args.req.method} ${args.req.path}`);
+}
+
+async formatBookNames(args: ControllerArgsT, result: any): Promise<any> {
+    return { data: result, formatted: true };
+}
+```
+
+#### Hook Priority and Execution Order
+
+Hooks execute in priority order, with lower numbers running first:
+- Default priority is 100
+- Multiple hooks at the same priority level run in the order they were registered
+- Global hooks (without a target) run for all controller methods
+- Target-specific hooks run only for the specified controller method
 
 ## Getting Started
 
