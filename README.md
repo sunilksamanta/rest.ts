@@ -19,6 +19,7 @@ Key features:
 - 📝 TypeScript support
 - 📦 Mongoose integration
 - 🛠️ Customizable routes and controllers
+- 🪝 Powerful request/response lifecycle hooks
 - 🔧 CLI tool for code generation
 
 ## Installation
@@ -163,6 +164,60 @@ constructor() {
 async yourCustomHandler(): Promise<object> {
     // Your custom logic here
     return { data: 'Your custom response' };
+}
+```
+
+## Request/Response Lifecycle Hooks
+
+rest.ts now supports powerful hooks to control the request/response lifecycle. These hooks let you execute code before a request is processed, before a response is sent, or after a response has been sent.
+
+### Types of Hooks
+
+- **BeforeRequest**: Execute code before the controller method runs (validation, authentication, etc.)
+- **BeforeResponse**: Modify the response data before it's sent to the client
+- **AfterResponse**: Execute code after the response has been sent (logging, cleanup, analytics)
+
+### Using Hooks
+
+You can use hooks in two ways:
+
+#### 1. Using Decorators
+
+```typescript
+// Hook that runs before a specific controller method
+@BeforeRequest({target: 'getBookNames'})
+async validateRequest(args: ControllerArgsT): Promise<boolean | void> {
+    // Validate request
+    // Return false to abort the request
+    return true;
+}
+
+// Hook that modifies the response before sending
+@BeforeResponse({target: 'getBookNames'})
+async formatResponse(args: ControllerArgsT, result: any): Promise<any> {
+    // Modify and return the response data
+    return { data: result, count: result.length };
+}
+
+// Hook that runs after response is sent
+@AfterResponse()
+async logResponse(args: ControllerArgsT, result: any): Promise<void> {
+    // Log or perform analytics after response is sent
+    console.log(`Response sent for ${args.req.method} ${args.req.path}`);
+}
+```
+
+#### 2. Registering Hooks Programmatically
+
+```typescript
+constructor() {
+    super();
+    // Register a global hook with default priority (100)
+    this.registerBeforeRequestHook(this.logAllRequests);
+}
+
+async logAllRequests(args: ControllerArgsT): Promise<void> {
+    console.log(`Request to ${args.req.method} ${args.req.path}`);
 }
 ```
 
